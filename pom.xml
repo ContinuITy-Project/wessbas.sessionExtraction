@@ -3,6 +3,14 @@
   <groupId>net.sf.markov4jmeter</groupId>
   <artifactId>sessionExtraction</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  
+  <repositories>
+  <repository>
+  <id>sonatype.oss.snapshots</id>
+  <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+</repository>
+  </repositories>
+  
   <dependencies>
   	<dependency>
   		<groupId>org.apache.commons</groupId>
@@ -14,6 +22,12 @@
 		<groupId>org.apache.commons</groupId>
 		<artifactId>commons-lang3</artifactId>
 		<version>3.3</version>
+	</dependency>
+	
+	<dependency>
+  	<groupId>net.kieker-monitoring</groupId>
+  	<artifactId>kieker</artifactId>
+  	<version>1.10-SNAPSHOT</version>
 	</dependency>
   </dependencies>
 </project>
