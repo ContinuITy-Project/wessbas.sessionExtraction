@@ -1,5 +1,8 @@
 package net.sf.sessionAnalysis;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -197,5 +200,36 @@ public class SessionVisitorArrivalAndCompletionRate implements ISessionDatVisito
 	 */
 	public TreeMap<Long, Integer> getNumConcurrentSessionsOverTime() {
 		return numConcurrentSessionsOverTime;
+	}
+	
+	
+	public void writeArrivalCompletionRatesAndMaxNumSessions() throws IOException  {
+		FileWriter fw = new FileWriter(this.getClass().getSimpleName()+"-arrivalCompletionRatesAndMaxNumSessions.csv");
+        BufferedWriter writer = new BufferedWriter(fw);
+        
+        writer.write("timestamp;arrivalRate;completionRate;maxConcurrentSessions");
+        writer.newLine();
+        int numBuckets = this.completionRates.length;
+        for (int i=0; i<numBuckets; i++) {
+        	writer.write((minTimestampNanos + i * (resolutionValueNanos)) + ";" + this.arrivalRates[i] + ";" + this.completionRates[i] + ";" + this.maxNumSessionsPerInterval[i]);
+        	writer.newLine();
+        }
+        writer.close();
+        fw.close();
+	}
+	
+	public void writeSessionsOverTime() throws IOException  {
+		FileWriter fw = new FileWriter(this.getClass().getSimpleName()+"-sessionsOverTime.csv");
+        BufferedWriter writer = new BufferedWriter(fw);
+        
+        writer.write("timestamp;numSessions");
+        writer.newLine();
+        for (Entry<Long, Integer> event: this.numConcurrentSessionsOverTime.entrySet()) {
+        	writer.write(event.getKey() + ";" + event.getValue());
+        	writer.newLine();
+        }
+        
+        writer.close();
+        fw.close();
 	}
 }
