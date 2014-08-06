@@ -38,7 +38,7 @@ public class SessionAnalyzer {
 		 * UTC-blade3-KIEKER-SPECjEnterprise2010-20-min-excerpt-sessions.dat |
 		 * awk -F ";" '{print NF-1}' | sort -n | uniq -c | wc -l
 		 */
-		System.out.println("Num sessions: "+ sessionVisitorArrivalAndCompletionRate.getCompletionTimeStamps().length);
+		System.out.println("Num sessions: "+ sessionVisitorArrivalAndCompletionRate.getCompletionTimestamps().length);
 		System.out.println("Length histogram: " + sessionVisitorSessionLengthStatistics.getSessionLengthHistogram());
 		System.out.println("Length vector: " + ArrayUtils.toString(sessionVisitorSessionLengthStatistics.computeLengthVector()));
 		System.out.println("Mean length (# user actions): " + sessionVisitorSessionLengthStatistics.computeSessionLengthMean());
@@ -47,6 +47,7 @@ public class SessionAnalyzer {
 		System.out.println("Timespan (local date/time): " + sessionVisitorMinMaxTimeStamp.getMinDateTime() + " - " + sessionVisitorMinMaxTimeStamp.getMaxDateTime());
 		System.out.println("Arrival rates: " + ArrayUtils.toString(sessionVisitorArrivalAndCompletionRate.getArrivalRates()));
 		System.out.println("Completion rates: " + ArrayUtils.toString(sessionVisitorArrivalAndCompletionRate.getCompletionRates()));
-		System.out.println("Concurrent sessions: " + ArrayUtils.toString(sessionVisitorArrivalAndCompletionRate.getNumConcurrentSessions()));
+		System.out.println("Concurrent number of sessions over time" + sessionVisitorArrivalAndCompletionRate.getNumConcurrentSessionsOverTime());
+		System.out.println("Max number of sessions per time interval: " + ArrayUtils.toString(sessionVisitorArrivalAndCompletionRate.getMaxNumSessionsPerInterval()));
 	}
 }
