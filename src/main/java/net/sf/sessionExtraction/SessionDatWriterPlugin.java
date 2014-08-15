@@ -196,7 +196,7 @@ public final class SessionDatWriterPlugin extends AbstractFilterPlugin {
 		for (Execution e : t.getTraceAsSortedExecutionSet())  {
 			// We extract the method name of the method with eoi/ess 2/2, e.g., 
 			// org.spec.jent.servlet.helper.SpecServletAction.doVehicleQuotes(javax.servlet.ServletContext, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Integer, java.lang.String, int)
-			if(e.getEoi() == 2 && e.getEss() == 2) {
+			if(e.getEoi() == 0 && e.getEss() == 0) {
 				return e.getOperation().getSignature().getName();
 			}
 		}
