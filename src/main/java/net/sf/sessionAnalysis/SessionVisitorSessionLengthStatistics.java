@@ -1,5 +1,8 @@
 package net.sf.sessionAnalysis;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
@@ -67,5 +70,20 @@ public class SessionVisitorSessionLengthStatistics implements
 			}
 		}
 		return 	ArrayUtils.toPrimitive(lengths.toArray(new Double[] {}));
+	}
+	
+	public void writeSessionsOverTime(final String outputDir) throws IOException  {
+		FileWriter fw = new FileWriter(outputDir + "/" + this.getClass().getSimpleName()+"-sessionLengths.csv");
+        BufferedWriter writer = new BufferedWriter(fw);
+        
+        writer.write("length");
+        writer.newLine();
+        for (double l : this.computeLengthVector()) {
+        	writer.write(Double.toString(l));
+        	writer.newLine();
+        }
+        
+        writer.close();
+        fw.close();
 	}
 }

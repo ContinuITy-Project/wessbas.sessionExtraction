@@ -203,8 +203,8 @@ public class SessionVisitorArrivalAndCompletionRate implements ISessionDatVisito
 	}
 	
 	
-	public void writeArrivalCompletionRatesAndMaxNumSessions() throws IOException  {
-		FileWriter fw = new FileWriter(this.getClass().getSimpleName()+"-arrivalCompletionRatesAndMaxNumSessions.csv");
+	public void writeArrivalCompletionRatesAndMaxNumSessions(final String outputdir) throws IOException  {
+		FileWriter fw = new FileWriter(outputdir + "/" + this.getClass().getSimpleName()+"-arrivalCompletionRatesAndMaxNumSessions.csv");
         BufferedWriter writer = new BufferedWriter(fw);
         
         writer.write("timestamp;arrivalRate;completionRate;maxConcurrentSessions");
@@ -218,8 +218,8 @@ public class SessionVisitorArrivalAndCompletionRate implements ISessionDatVisito
         fw.close();
 	}
 	
-	public void writeSessionsOverTime() throws IOException  {
-		FileWriter fw = new FileWriter(this.getClass().getSimpleName()+"-sessionsOverTime.csv");
+	public void writeSessionsOverTime(final String outputDir) throws IOException  {
+		FileWriter fw = new FileWriter(outputDir + "/" + this.getClass().getSimpleName()+"-sessionsOverTime.csv");
         BufferedWriter writer = new BufferedWriter(fw);
         
         writer.write("timestamp;numSessions");

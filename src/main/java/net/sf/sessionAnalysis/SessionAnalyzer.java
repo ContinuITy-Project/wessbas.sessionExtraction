@@ -13,8 +13,12 @@ import org.apache.commons.lang3.ArrayUtils;
 public class SessionAnalyzer {
 	// private static final String INPUT_SESSIONS_DAT_FN =
 	// "../../evaluation/SPECjEnterprise-data/kieker-20110929-14382537-UTC-blade3-KIEKER-SPECjEnterprise2010-20-min-excerpt-sessions.dat";
-	static final String INPUT_SESSIONS_DAT_FN = "../net.sf.markov4jmeter.behaviormodelextractor/examples/menasce/input/generated_session_logs.dat";
-
+	//static final String INPUT_SESSIONS_DAT_FN = "../net.sf.markov4jmeter.behaviormodelextractor/examples/menasce/input/generated_session_logs.dat";
+	
+	// 
+	static final String INPUT_SESSIONS_DAT_FN = "../../evaluation/20140826-SPECjEnterprise/clustering-results/specj_25p_50b_25m.dat";
+	static final String OUTPUT_DIR = "../../evaluation/20140826-SPECjEnterprise/session-analysis/specj_25p_50b_25m";
+	
 	public static void main(String[] args) throws IOException {
 
 		final SessionDatReader sessionDatReader = new SessionDatReader(INPUT_SESSIONS_DAT_FN);
@@ -30,6 +34,10 @@ public class SessionAnalyzer {
 				new SessionVisitorArrivalAndCompletionRate(1, TimeUnit.MINUTES);
 		sessionDatReader.registerVisitor(sessionVisitorArrivalAndCompletionRate);
 
+		SessionVisitorRequestTypeCounter sessionVisitorRequestTypeCounter = 
+				new SessionVisitorRequestTypeCounter();
+		sessionDatReader.registerVisitor(sessionVisitorRequestTypeCounter);
+		
 		sessionDatReader.read();
 
 		/*
@@ -41,7 +49,8 @@ public class SessionAnalyzer {
 		 */
 		System.out.println("Num sessions: " + sessionVisitorArrivalAndCompletionRate.getCompletionTimestamps().length);
 		System.out.println("Length histogram: " + sessionVisitorSessionLengthStatistics.getSessionLengthHistogram());
-		System.out.println("Length vector: " + ArrayUtils.toString(sessionVisitorSessionLengthStatistics.computeLengthVector()));
+		sessionVisitorSessionLengthStatistics.writeSessionsOverTime(OUTPUT_DIR);
+		//System.out.println("Length vector: " + ArrayUtils.toString(sessionVisitorSessionLengthStatistics.computeLengthVector()));
 		System.out.println("Mean length (# user actions): " + sessionVisitorSessionLengthStatistics.computeSessionLengthMean());
 		System.out.println("Standard dev (# user actions): " + sessionVisitorSessionLengthStatistics.computeSessionLengthStdDev());
 		System.out.println("Timespan (nanos since epoche): " + sessionVisitorMinMaxTimeStamp.getMinTimeStamp() + " - "
@@ -53,11 +62,12 @@ public class SessionAnalyzer {
 			System.out
 					.println("Max number of sessions per time interval: "
 							+ ArrayUtils.toString(sessionVisitorArrivalAndCompletionRate.getMaxNumSessionsPerInterval()));
-			sessionVisitorArrivalAndCompletionRate.writeArrivalCompletionRatesAndMaxNumSessions();
+			sessionVisitorArrivalAndCompletionRate.writeArrivalCompletionRatesAndMaxNumSessions(OUTPUT_DIR);
 		}
 		{
-			System.out.println("Concurrent number of sessions over time" + sessionVisitorArrivalAndCompletionRate.getNumConcurrentSessionsOverTime());
-			sessionVisitorArrivalAndCompletionRate.writeSessionsOverTime();
+			//System.out.println("Concurrent number of sessions over time" + sessionVisitorArrivalAndCompletionRate.getNumConcurrentSessionsOverTime());
+			sessionVisitorArrivalAndCompletionRate.writeSessionsOverTime(OUTPUT_DIR);
 		}
+		sessionVisitorRequestTypeCounter.writeCallFrequencies(OUTPUT_DIR);
 	}
 }
