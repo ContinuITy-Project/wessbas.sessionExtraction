@@ -219,18 +219,25 @@ public final class SessionDatWriterPluginHackForCookieManagerProblem extends Abs
 			for (ExecutionTrace t : session.getContainedTraces()) {
 				String curAction = getUseCaseForTrace(t);
 				if ("login".equals(curAction)) {
+					if(sb.length() > 0) {
+						if (this.printStream != null) {
+							this.printStream.println(sb.toString());
+						} else {
+							this.log.info(sb.toString());
+						}
+						sb = new StringBuilder(128);
+						curSubSessionId++;
+						curSessionId = session.getSessionId()+"-"+curSubSessionId;						
+					}
 					sb.append(curSessionId);
 				}
 				sb.append(";\"").append(curAction).append("\":").append(t.getStartTimestamp()).append(":").append(t.getEndTimestamp());
-				if ("logout".equals(curAction)) {
-					if (this.printStream != null) {
-						this.printStream.println(sb.toString());
-					} else {
-						this.log.info(sb.toString());
-					}
-					sb = new StringBuilder(128);
-					curSubSessionId++;
-					curSessionId = session.getSessionId()+"-"+curSubSessionId;
+			}
+			if(sb.length() > 0) {
+				if (this.printStream != null) {
+					this.printStream.println(sb.toString());
+				} else {
+					this.log.info(sb.toString());
 				}
 			}
 		}
