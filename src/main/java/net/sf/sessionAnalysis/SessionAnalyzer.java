@@ -16,8 +16,8 @@ public class SessionAnalyzer {
 	//static final String INPUT_SESSIONS_DAT_FN = "../net.sf.markov4jmeter.behaviormodelextractor/examples/menasce/input/generated_session_logs.dat";
 	
 	// 
-	static final String INPUT_SESSIONS_DAT_FN = "../../evaluation/20140826-SPECjEnterprise/clustering-results/specj_25p_50b_25m.dat";
-	static final String OUTPUT_DIR = "../../evaluation/20140826-SPECjEnterprise/session-analysis/specj_25p_50b_25m";
+	static final String INPUT_SESSIONS_DAT_FN = "../../evaluation/20140826-SPECjEnterprise/5-session-analysis/specj_25p_50b_25m_manhattan_3_Cluster/sessions-correctedWithHack.dat";
+	static final String OUTPUT_DIR = "../../evaluation/20140826-SPECjEnterprise/5-session-analysis/specj_25p_50b_25m_manhattan_3_Cluster/";
 	
 	public static void main(String[] args) throws IOException {
 
