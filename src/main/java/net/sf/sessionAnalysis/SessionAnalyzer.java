@@ -11,13 +11,8 @@ import org.apache.commons.lang3.ArrayUtils;
  * 
  */
 public class SessionAnalyzer {
-	// private static final String INPUT_SESSIONS_DAT_FN =
-	// "../../evaluation/SPECjEnterprise-data/kieker-20110929-14382537-UTC-blade3-KIEKER-SPECjEnterprise2010-20-min-excerpt-sessions.dat";
-	//static final String INPUT_SESSIONS_DAT_FN = "../net.sf.markov4jmeter.behaviormodelextractor/examples/menasce/input/generated_session_logs.dat";
-	
-	// 
-	static final String INPUT_SESSIONS_DAT_FN = "../../evaluation/20140826-SPECjEnterprise/1-clustering-results/specj_25p_50b_25m.dat";
-	static final String OUTPUT_DIR = "../../evaluation/20140826-SPECjEnterprise/5-session-analysis/specj_25p_50b_25m/";
+	static final String INPUT_SESSIONS_DAT_FN = "../../evaluation/20140826-SPECjEnterprise/5-session-analysis/specj_25p_50b_25m_manhattan_4_Cluster/sessions-correctedWithHack.dat";
+	static final String OUTPUT_DIR = "../../evaluation/20140826-SPECjEnterprise/5-session-analysis/specj_25p_50b_25m_manhattan_4_Cluster/";
 	
 	public static void main(String[] args) throws IOException {
 
@@ -38,6 +33,10 @@ public class SessionAnalyzer {
 				new SessionVisitorRequestTypeCounter();
 		sessionDatReader.registerVisitor(sessionVisitorRequestTypeCounter);
 		
+		final SessionVisitorDistinctSessions sessionVisitorDistinctSessions = 
+				new SessionVisitorDistinctSessions();
+		sessionDatReader.registerVisitor(sessionVisitorDistinctSessions);
+		
 		sessionDatReader.read();
 
 		/*
@@ -48,6 +47,7 @@ public class SessionAnalyzer {
 		 * awk -F ";" '{print NF-1}' | sort -n | uniq -c | wc -l
 		 */
 		System.out.println("Num sessions: " + sessionVisitorArrivalAndCompletionRate.getCompletionTimestamps().length);
+		System.out.println("Num distinct sessions: " + sessionVisitorDistinctSessions.numDistinctSessions());
 		System.out.println("Length histogram: " + sessionVisitorSessionLengthStatistics.getSessionLengthHistogram());
 		sessionVisitorSessionLengthStatistics.writeSessionsOverTime(OUTPUT_DIR);
 		//System.out.println("Length vector: " + ArrayUtils.toString(sessionVisitorSessionLengthStatistics.computeLengthVector()));
@@ -68,6 +68,11 @@ public class SessionAnalyzer {
 			//System.out.println("Concurrent number of sessions over time" + sessionVisitorArrivalAndCompletionRate.getNumConcurrentSessionsOverTime());
 			sessionVisitorArrivalAndCompletionRate.writeSessionsOverTime(OUTPUT_DIR);
 		}
-		sessionVisitorRequestTypeCounter.writeCallFrequencies(OUTPUT_DIR);
+		{
+			sessionVisitorRequestTypeCounter.writeCallFrequencies(OUTPUT_DIR);
+		}
+		{
+			sessionVisitorDistinctSessions.writeDistinctSessions(OUTPUT_DIR);
+		}
 	}
 }
