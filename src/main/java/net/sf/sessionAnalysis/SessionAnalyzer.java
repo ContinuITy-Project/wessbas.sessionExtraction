@@ -11,8 +11,8 @@ import org.apache.commons.lang3.ArrayUtils;
  * 
  */
 public class SessionAnalyzer {
-	static final String INPUT_SESSIONS_DAT_FN = "../../evaluation/20140826-SPECjEnterprise/5-session-analysis/specj_25p_50b_25m_manhattan_4_Cluster/sessions-correctedWithHack.dat";
-	static final String OUTPUT_DIR = "../../evaluation/20140826-SPECjEnterprise/5-session-analysis/specj_25p_50b_25m_manhattan_4_Cluster/";
+	static final String INPUT_SESSIONS_DAT_FN = "../../evaluation/20140826-SPECjEnterprise/5-session-analysis/specj_25p_50b_25m_manhattan_3_Cluster/sessions-correctedWithHack-onlyComplete.dat";
+	static final String OUTPUT_DIR = "../../evaluation/20140826-SPECjEnterprise/5-session-analysis/specj_25p_50b_25m_manhattan_3_Cluster/";
 	
 	public static void main(String[] args) throws IOException {
 

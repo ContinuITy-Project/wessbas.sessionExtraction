@@ -21,8 +21,8 @@ public class SessionExtractionHackForCookieManagerProblem {
 //	private static final String INPUT_MONITORING_LOG_FN = "../../evaluation/SPECjEnterprise-data/kieker-20110929-14382537-UTC-blade3-KIEKER-SPECjEnterprise2010-20-min-excerpt/";
 //	private static final String OUTPUT_SESSIONS_DAT_FN = "../../evaluation/SPECjEnterprise-data/kieker-20110929-14382537-UTC-blade3-KIEKER-SPECjEnterprise2010-20-min-excerpt-sessions.dat";
 
-	private static final String INPUT_MONITORING_LOG_FN = "../../evaluation/20140826-SPECjEnterprise/4-loadTestsResults/specj_25p_50b_25m_euclidean_2_Cluster/kieker-20140901-184912397-UTC-VAIO-KIEKER-SINGLETON/";
-	private static final String OUTPUT_SESSIONS_DAT_FN = "../../evaluation/20140826-SPECjEnterprise/4-loadTestsResults/specj_25p_50b_25m_euclidean_2_Cluster/sessions-correctedWithHack.dat";	
+	private static final String INPUT_MONITORING_LOG_FN = "../../evaluation/20140826-SPECjEnterprise/4-loadTestsResults/specj_25p_50b_25m_euclidean_4_Cluster/kieker-20140907-164744465-UTC-VAIO-KIEKER-SINGLETON/";
+	private static final String OUTPUT_SESSIONS_DAT_FN = "../../evaluation/20140826-SPECjEnterprise/4-loadTestsResults/specj_25p_50b_25m_euclidean_4_Cluster/sessions-correctedWithHack.dat";	
 	
 	public static void main(final String[] args) throws IllegalStateException, AnalysisConfigurationException {
 		
