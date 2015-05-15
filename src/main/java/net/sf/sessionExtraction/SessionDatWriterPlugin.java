@@ -1,9 +1,12 @@
 package net.sf.sessionExtraction;
 
+import io.github.wessbas.kiekerExtensions.record.ServletEntryRecord;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.util.concurrent.ConcurrentHashMap;
 
 import kieker.analysis.IProjectContext;
 import kieker.analysis.plugin.annotation.InputPort;
@@ -26,10 +29,13 @@ import kieker.tools.traceAnalysis.systemModel.ExecutionTraceBasedSession;
  * 
  */
 @Plugin(description = "A filter to print the object to a configured stream", configuration = {
-		@Property(name = SessionDatWriterPlugin.CONFIG_PROPERTY_NAME_STREAM, defaultValue = SessionDatWriterPlugin.CONFIG_PROPERTY_VALUE_STREAM_STDOUT, description = "The name of the stream used to print the incoming data (special values are STDOUT, STDERR, STDlog, and NULL; "
-				+ "other values are interpreted as filenames)."),
-		@Property(name = SessionDatWriterPlugin.CONFIG_PROPERTY_NAME_ENCODING, defaultValue = SessionDatWriterPlugin.CONFIG_PROPERTY_VALUE_DEFAULT_ENCODING, description = "The used encoding for the selected stream."),
-		@Property(name = SessionDatWriterPlugin.CONFIG_PROPERTY_NAME_APPEND, defaultValue = SessionDatWriterPlugin.CONFIG_PROPERTY_VALUE_STREAM_APPEND, description = "Decides whether the filter appends to the stream in the case of a file or not.") })
+	@Property(name = SessionDatWriterPlugin.CONFIG_PROPERTY_NAME_STREAM, defaultValue = SessionDatWriterPlugin.CONFIG_PROPERTY_VALUE_STREAM_STDOUT,
+			description = "The name of the stream used to print the incoming data (special values are STDOUT, STDERR, STDlog, and NULL; "
+					+ "other values are interpreted as filenames)."),
+	@Property(name = SessionDatWriterPlugin.CONFIG_PROPERTY_NAME_ENCODING, defaultValue = SessionDatWriterPlugin.CONFIG_PROPERTY_VALUE_DEFAULT_ENCODING,
+			description = "The used encoding for the selected stream."),
+	@Property(name = SessionDatWriterPlugin.CONFIG_PROPERTY_NAME_APPEND, defaultValue = SessionDatWriterPlugin.CONFIG_PROPERTY_VALUE_STREAM_APPEND,
+			description = "Decides whether the filter appends to the stream in the case of a file or not.") })
 public final class SessionDatWriterPlugin extends AbstractFilterPlugin {
 
 	/** The name of the input port for incoming events. */
@@ -81,6 +87,8 @@ public final class SessionDatWriterPlugin extends AbstractFilterPlugin {
 	private final boolean append;
 	private final String encoding;
 
+	private final ConcurrentHashMap<Long, ServletEntryRecord> servletInformation;
+
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
@@ -90,7 +98,7 @@ public final class SessionDatWriterPlugin extends AbstractFilterPlugin {
 	 *            The project context for this component.
 	 */
 	public SessionDatWriterPlugin(final Configuration configuration,
-			final IProjectContext projectContext) {
+			final IProjectContext projectContext, ConcurrentHashMap<Long, ServletEntryRecord> servletInformation) {
 		super(configuration, projectContext);
 
 		// Get the name of the stream.
@@ -145,6 +153,8 @@ public final class SessionDatWriterPlugin extends AbstractFilterPlugin {
 			this.printStreamName = printStreamNameConfig;
 			this.active = true;
 		}
+
+		this.servletInformation = servletInformation;
 	}
 
 	@Override
@@ -192,17 +202,18 @@ public final class SessionDatWriterPlugin extends AbstractFilterPlugin {
 	 * @param t
 	 * @return
 	 */
-	private String getUseCaseForTrace (ExecutionTrace t) {
-		for (Execution e : t.getTraceAsSortedExecutionSet())  {
-			// We extract the method name of the method with eoi/ess 2/2, e.g., 
-			// org.spec.jent.servlet.helper.SpecServletAction.doVehicleQuotes(javax.servlet.ServletContext, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Integer, java.lang.String, int)
-			if(e.getEoi() == 0 && e.getEss() == 0) {
+	private String getUseCaseForTrace(ExecutionTrace t) {
+		for (Execution e : t.getTraceAsSortedExecutionSet()) {
+			// We extract the method name of the method with eoi/ess 2/2, e.g.,
+			// org.spec.jent.servlet.helper.SpecServletAction.doVehicleQuotes(javax.servlet.ServletContext, javax.servlet.http.HttpServletRequest,
+			// javax.servlet.http.HttpServletResponse, java.lang.Integer, java.lang.String, int)
+			if (e.getEoi() == 0 && e.getEss() == 0) {
 				return e.getOperation().getSignature().getName();
 			}
 		}
 		return Long.toString(t.getTraceId());
 	}
-	
+
 	/**
 	 * This method is the input port of the filter receiving incoming session objects.
 	 * Every session will be printed into a stream (based on the configuration).
@@ -217,6 +228,16 @@ public final class SessionDatWriterPlugin extends AbstractFilterPlugin {
 			sb.append(session.getSessionId());
 			for (ExecutionTrace t : session.getContainedTraces()) {
 				sb.append(";\"").append(getUseCaseForTrace(t)).append("\":").append(t.getStartTimestamp()).append(":").append(t.getEndTimestamp());
+				ServletEntryRecord r = this.servletInformation.remove(t.getTraceId());
+				if (r != null) {
+					sb.append(":").append(r.getUri());
+					sb.append(":").append(r.getPort());
+					sb.append(":").append(r.getHost());
+					sb.append(":").append(r.getProtocol());
+					sb.append(":").append(r.getMethod());
+					sb.append(":").append(r.getQueryString());
+					sb.append(":").append(r.getEncoding());
+				}
 			}
 			final String record = sb.toString();
 			if (this.printStream != null) {

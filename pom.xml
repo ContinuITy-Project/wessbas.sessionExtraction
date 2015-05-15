@@ -27,7 +27,23 @@
 	<dependency>
   	<groupId>net.kieker-monitoring</groupId>
   	<artifactId>kieker</artifactId>
-  	<version>1.10-SNAPSHOT</version>
+  	<version>1.11</version>
 	</dependency>
   </dependencies>
+  
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.3.2</version>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+						<compilerArgument></compilerArgument>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project>

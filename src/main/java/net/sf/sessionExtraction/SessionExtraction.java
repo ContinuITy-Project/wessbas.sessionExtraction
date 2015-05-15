@@ -21,8 +21,11 @@ public class SessionExtraction {
 //	private static final String INPUT_MONITORING_LOG_FN = "../../evaluation/SPECjEnterprise-data/kieker-20110929-14382537-UTC-blade3-KIEKER-SPECjEnterprise2010-20-min-excerpt/";
 //	private static final String OUTPUT_SESSIONS_DAT_FN = "../../evaluation/SPECjEnterprise-data/kieker-20110929-14382537-UTC-blade3-KIEKER-SPECjEnterprise2010-20-min-excerpt-sessions.dat";
 
-	private static final String INPUT_MONITORING_LOG_FN = "../../evaluation/20140826-SPECjEnterprise/4-loadTestsResults/specj_25p_50b_25m_manhattan_3_Cluster/kieker-20140901-165013250-UTC-VAIO-KIEKER-SINGLETON/";
-	private static final String OUTPUT_SESSIONS_DAT_FN = "../../evaluation/20140826-SPECjEnterprise/4-loadTestsResults/specj_25p_50b_25m_manhattan_3_Cluster/sessions.dat";	
+//	private static final String INPUT_MONITORING_LOG_FN = "../../evaluation/20140826-SPECjEnterprise/4-loadTestsResults/specj_25p_50b_25m_manhattan_3_Cluster/kieker-20140901-165013250-UTC-VAIO-KIEKER-SINGLETON/";
+//	private static final String OUTPUT_SESSIONS_DAT_FN = "../../evaluation/20140826-SPECjEnterprise/4-loadTestsResults/specj_25p_50b_25m_manhattan_3_Cluster/sessions.dat";	
+	
+	private static final String INPUT_MONITORING_LOG_FN = "/tmp/kieker-20150515-231412750-UTC-avh-ThinkPad-RSS-KIEKER-SINGLETON/";
+	private static final String OUTPUT_SESSIONS_DAT_FN = "/tmp/kieker-20150515-231412750-UTC-avh-ThinkPad-RSS-KIEKER-SINGLETON/sessions.dat";	
 	
 	
 	public static void main(final String[] args) throws IllegalStateException, AnalysisConfigurationException {
@@ -68,6 +71,9 @@ public class SessionExtraction {
 		analysisController.connect(traceReconstructionFilter, TraceReconstructionFilter.OUTPUT_PORT_NAME_EXECUTION_TRACE,
 				sessionReconstructionFilter, SessionReconstructionFilter.INPUT_PORT_NAME_EXECUTION_TRACES);
 
+		final ServletInfoExtractionFilter servletInfoExtractionFilter = new ServletInfoExtractionFilter(new Configuration(), analysisController);
+		analysisController.connect(reader, FSReader.OUTPUT_PORT_NAME_RECORDS, servletInfoExtractionFilter, ServletInfoExtractionFilter.INPUT_PORT_NAME_EVENTS);
+		
 		// Initialize, register and connect the list collection filter
 		final ListCollectionFilter<ExecutionTraceBasedSession> listCollectionFilter = new ListCollectionFilter<ExecutionTraceBasedSession>(new Configuration(),
 				analysisController);
@@ -81,7 +87,7 @@ public class SessionExtraction {
 		final Configuration sessionDatWriterConfiguration = new Configuration();
 		sessionDatWriterConfiguration.setProperty(SessionDatWriterPlugin.CONFIG_PROPERTY_NAME_STREAM, OUTPUT_SESSIONS_DAT_FN);
 		sessionDatWriterConfiguration.setProperty(SessionDatWriterPlugin.CONFIG_PROPERTY_NAME_APPEND, "false");
-		final SessionDatWriterPlugin sessionsDatWriter = new SessionDatWriterPlugin(sessionDatWriterConfiguration, analysisController);
+		final SessionDatWriterPlugin sessionsDatWriter = new SessionDatWriterPlugin(sessionDatWriterConfiguration, analysisController,servletInfoExtractionFilter.getServletInformation());
 		analysisController.connect(sessionReconstructionFilter, SessionReconstructionFilter.OUTPUT_PORT_NAME_EXECUTION_TRACE_SESSIONS, 
 				sessionsDatWriter, SessionDatWriterPlugin.INPUT_PORT_NAME_SESSIONS);
 		
