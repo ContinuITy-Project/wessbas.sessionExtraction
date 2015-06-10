@@ -11,8 +11,8 @@ import org.apache.commons.lang3.ArrayUtils;
  * 
  */
 public class SessionAnalyzer {
-	static final String INPUT_SESSIONS_DAT_FN = "../../evaluation/20140826-SPECjEnterprise/5-session-analysis/specj_25p_50b_25m_manhattan_3_Cluster/sessions-correctedWithHack-onlyComplete.dat";
-	static final String OUTPUT_DIR = "../../evaluation/20140826-SPECjEnterprise/5-session-analysis/specj_25p_50b_25m_manhattan_3_Cluster/";
+	static final String INPUT_SESSIONS_DAT_FN = "c:/kieker-specj-measure_faban-harness-800-user_50b_25p_25m_norm_dist_600/sessions.dat";
+	static final String OUTPUT_DIR = "C:/kieker-specj-measure_faban-harness-800-user_50b_25p_25m_norm_dist_600/";
 	
 	public static void main(String[] args) throws IOException {
 
@@ -24,6 +24,9 @@ public class SessionAnalyzer {
 
 		final SessionVisitorMinMaxTimeStamp sessionVisitorMinMaxTimeStamp = new SessionVisitorMinMaxTimeStamp();
 		sessionDatReader.registerVisitor(sessionVisitorMinMaxTimeStamp);
+		
+		final SessionVisitorResponseTimes sessionVisitorResponseTimes = new SessionVisitorResponseTimes();
+		sessionDatReader.registerVisitor(sessionVisitorResponseTimes);
 
 		final SessionVisitorArrivalAndCompletionRate sessionVisitorArrivalAndCompletionRate =
 				new SessionVisitorArrivalAndCompletionRate(1, TimeUnit.MINUTES);
@@ -36,6 +39,9 @@ public class SessionAnalyzer {
 		final SessionVisitorDistinctSessions sessionVisitorDistinctSessions = 
 				new SessionVisitorDistinctSessions();
 		sessionDatReader.registerVisitor(sessionVisitorDistinctSessions);
+		
+		final SessionVisitorBehaviorMix sessionVisitorBehaviorMix = new SessionVisitorBehaviorMix();
+		sessionDatReader.registerVisitor(sessionVisitorBehaviorMix);
 		
 		sessionDatReader.read();
 
@@ -53,11 +59,14 @@ public class SessionAnalyzer {
 		//System.out.println("Length vector: " + ArrayUtils.toString(sessionVisitorSessionLengthStatistics.computeLengthVector()));
 		System.out.println("Mean length (# user actions): " + sessionVisitorSessionLengthStatistics.computeSessionLengthMean());
 		System.out.println("Standard dev (# user actions): " + sessionVisitorSessionLengthStatistics.computeSessionLengthStdDev());
+		System.out.println("Average Session Duration: " + sessionVisitorMinMaxTimeStamp.getAverageSessionTimeLength());
 		System.out.println("Timespan (nanos since epoche): " + sessionVisitorMinMaxTimeStamp.getMinTimeStamp() + " - "
 				+ sessionVisitorMinMaxTimeStamp.getMaxTimeStamp());
 		System.out.println("Timespan (local date/time): " + sessionVisitorMinMaxTimeStamp.getMinDateTime() + " - " + sessionVisitorMinMaxTimeStamp.getMaxDateTime());
 		{
 			System.out.println("Arrival rates: " + ArrayUtils.toString(sessionVisitorArrivalAndCompletionRate.getArrivalRates()));
+			System.out.println("Session duration rates: " + ArrayUtils.toString(sessionVisitorArrivalAndCompletionRate.getSessionDuration()));
+			System.out.println("User action rates: " + ArrayUtils.toString(sessionVisitorArrivalAndCompletionRate.getUserActionRates()));
 			System.out.println("Completion rates: " + ArrayUtils.toString(sessionVisitorArrivalAndCompletionRate.getCompletionRates()));
 			System.out
 					.println("Max number of sessions per time interval: "
@@ -74,5 +83,7 @@ public class SessionAnalyzer {
 		{
 			sessionVisitorDistinctSessions.writeDistinctSessions(OUTPUT_DIR);
 		}
+		sessionVisitorResponseTimes.printResponseTimes();
+		sessionVisitorBehaviorMix.printRequestTypes();
 	}
 }

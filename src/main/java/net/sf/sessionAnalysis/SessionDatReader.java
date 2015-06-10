@@ -57,7 +57,9 @@ class SessionDatReader {
 							.parseLong(actionInfoSplit[1]);
 					final long actionEndTime = Long
 							.parseLong(actionInfoSplit[2]);
-					final UserAction userAction = new UserAction(actionStartTime, actionEndTime, invokedAction);
+					final String queryString = actionInfoSplit[8];
+					
+					final UserAction userAction = new UserAction(actionStartTime, actionEndTime, invokedAction, queryString);
 					userActions.add(userAction);
 					if (actionStartTime < minTimeStamp) {
 						minTimeStamp = actionStartTime;
@@ -66,9 +68,16 @@ class SessionDatReader {
 						maxTimeStamp = actionEndTime;
 					}
 				}
-
-				Session session = new Session(sessionId, userActions, minTimeStamp, maxTimeStamp);
-				this.notifyVisitorsAboutNewSession(session);
+								
+				long startTime = 1433841215000000000L;
+				  long endTime = 1433841815000000000L;  
+			    if (userActions.get(0).getStartTime() > startTime && userActions.get( userActions.size() -1 ).getStartTime() < endTime) { 
+				   Session session = new Session(sessionId, userActions, minTimeStamp, maxTimeStamp);
+				   this.notifyVisitorsAboutNewSession(session);
+			    }		
+			    
+//			    Session session = new Session(sessionId, userActions, minTimeStamp, maxTimeStamp);
+//				   this.notifyVisitorsAboutNewSession(session);
 			}
 			this.notifyVisitorsAboutEOF();
 		} catch (FileNotFoundException e) {

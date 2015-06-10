@@ -24,10 +24,9 @@ public class SessionExtraction {
 //	private static final String INPUT_MONITORING_LOG_FN = "../../evaluation/20140826-SPECjEnterprise/4-loadTestsResults/specj_25p_50b_25m_manhattan_3_Cluster/kieker-20140901-165013250-UTC-VAIO-KIEKER-SINGLETON/";
 //	private static final String OUTPUT_SESSIONS_DAT_FN = "../../evaluation/20140826-SPECjEnterprise/4-loadTestsResults/specj_25p_50b_25m_manhattan_3_Cluster/sessions.dat";	
 	
-	private static final String INPUT_MONITORING_LOG_FN = "/tmp/kieker-20150515-231412750-UTC-avh-ThinkPad-RSS-KIEKER-SINGLETON/";
-	private static final String OUTPUT_SESSIONS_DAT_FN = "/tmp/kieker-20150515-231412750-UTC-avh-ThinkPad-RSS-KIEKER-SINGLETON/sessions.dat";	
-	
-	
+	private static final String INPUT_MONITORING_LOG_FN = "c:/kieker-20150610-063522682-UTC-ext-specj-susejboss.plab.fortiss.org-KIEKER-SINGLETON/";
+	private static final String OUTPUT_SESSIONS_DAT_FN = "c:/kieker-20150610-063522682-UTC-ext-specj-susejboss.plab.fortiss.org-KIEKER-SINGLETON/sessions.dat";	
+		
 	public static void main(final String[] args) throws IllegalStateException, AnalysisConfigurationException {
 		
 		final AnalysisController analysisController = new AnalysisController();

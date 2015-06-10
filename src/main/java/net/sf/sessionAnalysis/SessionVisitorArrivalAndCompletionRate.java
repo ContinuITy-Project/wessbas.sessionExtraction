@@ -27,12 +27,17 @@ public class SessionVisitorArrivalAndCompletionRate implements ISessionDatVisito
 
 	private final List<Long> arrivalTimestamps = new LinkedList<Long>();
 	private final List<Long> completionTimestamps = new LinkedList<Long>();
+	private final List<SessionInformation> sessionDurationList = new LinkedList<SessionInformation>();
 
 	private volatile long[] arrivalTimestampsSorted = null;
 	private volatile long[] completionTimestampsSorted = null;
+	private volatile long[] sessionDurationRates = null;
+	
 
 	private volatile int[] arrivalRates = null;
 	private volatile int[] completionRates = null;
+	private volatile double[] userActionRates = null;
+	
 	
 	private volatile TreeMap<Long, Integer> numConcurrentSessionsOverTime =
 			new TreeMap<Long, Integer>();
@@ -47,6 +52,7 @@ public class SessionVisitorArrivalAndCompletionRate implements ISessionDatVisito
 	public void handleSession(Session session) {
 		this.arrivalTimestamps.add(session.getSessionStartTimeStamp());
 		this.completionTimestamps.add(session.getSessionEndTimeStamp());
+		this.sessionDurationList.add(new SessionInformation(session.getSessionStartTimeStamp(), session.getSessionEndTimeStamp() - session.getSessionStartTimeStamp(), session.getUserActions().size()));
 		if (session.getSessionStartTimeStamp() < this.minTimestampNanos) {
 			this.minTimestampNanos = session.getSessionStartTimeStamp();
 		}
@@ -121,16 +127,41 @@ public class SessionVisitorArrivalAndCompletionRate implements ISessionDatVisito
 
 		this.arrivalRates = new int[numBuckets];
 		this.completionRates = new int[numBuckets];
+		this.sessionDurationRates = new long[numBuckets];
+		this.userActionRates = new double[numBuckets];
 
 		for (long arrivalTimeStamp : this.arrivalTimestamps) {
 			final int arrivalTimeStampBucket = (int) ((arrivalTimeStamp - this.minTimestampNanos) / this.resolutionValueNanos);
 			arrivalRates[arrivalTimeStampBucket]++;
+			for (SessionInformation sessionInformation : this.sessionDurationList) {
+				if (sessionInformation.getTimestamp() == arrivalTimeStamp) {
+					sessionDurationRates[arrivalTimeStampBucket] += sessionInformation.getDuration();
+					userActionRates[arrivalTimeStampBucket] += sessionInformation.getCntUserActions();
+				}
+			}
 		}
 
 		for (long completionTimeStamp : this.completionTimestamps) {
 			final int completionTimeStampBucket = (int) ((completionTimeStamp - this.minTimestampNanos) / this.resolutionValueNanos);
 			completionRates[completionTimeStampBucket]++;
 		}
+		
+		for (int i = 0; i < sessionDurationRates.length; i++) {
+			if (arrivalRates[i] == 0) {
+				sessionDurationRates[i] = 0;
+			} else {
+				sessionDurationRates[i] = sessionDurationRates[i] / arrivalRates[i] ;
+			}
+		}
+		
+		for (int i = 0; i < userActionRates.length; i++) {
+			if (arrivalRates[i] == 0) {
+				userActionRates[i] = 0;
+			} else {
+				userActionRates[i] = userActionRates[i] / (double) arrivalRates[i] ;
+			}
+		}
+		
 	}
 
 	/**
@@ -174,7 +205,15 @@ public class SessionVisitorArrivalAndCompletionRate implements ISessionDatVisito
 	public int[] getArrivalRates() {
 		return this.arrivalRates;
 	}
+	
+	public long[] getSessionDuration() {
+		return this.sessionDurationRates;
+	}
 
+	public double[] getUserActionRates() {
+		return this.userActionRates;
+	}
+	
 	public int[] getCompletionRates() {
 		return this.completionRates;
 	}
@@ -231,5 +270,58 @@ public class SessionVisitorArrivalAndCompletionRate implements ISessionDatVisito
         
         writer.close();
         fw.close();
+	}
+	
+	class SessionInformation {
+		long timestamp = 0;
+		long duration = 0;
+		long cntUserActions = 0;
+		
+		public SessionInformation(final long timestamp, final long duration, final int cntUserActions) {
+			this.timestamp = timestamp;
+			this.duration = duration;
+			this.cntUserActions = cntUserActions;
+		}
+		
+		/**
+		 * @return the cntUserActions
+		 */
+		public final long getCntUserActions() {
+			return cntUserActions;
+		}
+
+		/**
+		 * @param cntUserActions the cntUserActions to set
+		 */
+		public final void setCntUserActions(long cntUserActions) {
+			this.cntUserActions = cntUserActions;
+		}
+
+		/**
+		 * @return the timestamp
+		 */
+		public final long getTimestamp() {
+			return timestamp;
+		}
+		/**
+		 * @param timestamp the timestamp to set
+		 */
+		public final void setTimestamp(long timestamp) {
+			this.timestamp = timestamp;
+		}
+		/**
+		 * @return the duration
+		 */
+		public final long getDuration() {
+			return duration;
+		}
+		/**
+		 * @param duration the duration to set
+		 */
+		public final void setDuration(long duration) {
+			this.duration = duration;
+		}
+		
+		
 	}
 }
