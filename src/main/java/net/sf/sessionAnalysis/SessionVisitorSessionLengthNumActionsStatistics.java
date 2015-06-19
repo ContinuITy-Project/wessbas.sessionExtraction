@@ -20,7 +20,7 @@ import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
  * 
  */
 // TODO: Compute measures once handleEOF called and return precomputed values
-public class SessionVisitorSessionLengthStatistics implements
+public class SessionVisitorSessionLengthNumActionsStatistics implements
 		ISessionDatVisitor {
 	private final TreeMap<Integer, AtomicInteger> sessionLengthHistogram = new TreeMap<Integer, AtomicInteger>();
 

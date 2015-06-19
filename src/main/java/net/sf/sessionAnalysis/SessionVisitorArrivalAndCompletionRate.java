@@ -135,7 +135,7 @@ public class SessionVisitorArrivalAndCompletionRate implements ISessionDatVisito
 			arrivalRates[arrivalTimeStampBucket]++;
 			for (SessionInformation sessionInformation : this.sessionDurationList) {
 				if (sessionInformation.getTimestamp() == arrivalTimeStamp) {
-					sessionDurationRates[arrivalTimeStampBucket] += sessionInformation.getDuration();
+					sessionDurationRates[arrivalTimeStampBucket] += sessionInformation.getDurationNanos();
 					userActionRates[arrivalTimeStampBucket] += sessionInformation.getCntUserActions();
 				}
 			}
@@ -274,12 +274,12 @@ public class SessionVisitorArrivalAndCompletionRate implements ISessionDatVisito
 	
 	class SessionInformation {
 		long timestamp = 0;
-		long duration = 0;
+		long durationNanos = 0;
 		long cntUserActions = 0;
 		
 		public SessionInformation(final long timestamp, final long duration, final int cntUserActions) {
 			this.timestamp = timestamp;
-			this.duration = duration;
+			this.durationNanos = duration;
 			this.cntUserActions = cntUserActions;
 		}
 		
@@ -312,14 +312,14 @@ public class SessionVisitorArrivalAndCompletionRate implements ISessionDatVisito
 		/**
 		 * @return the duration
 		 */
-		public final long getDuration() {
-			return duration;
+		public final long getDurationNanos() {
+			return durationNanos;
 		}
 		/**
 		 * @param duration the duration to set
 		 */
 		public final void setDuration(long duration) {
-			this.duration = duration;
+			this.durationNanos = duration;
 		}
 		
 		

@@ -17,6 +17,8 @@ import java.util.List;
 class SessionDatReader {
 	private final String filename;
 	private final Collection<ISessionDatVisitor> visitors = new LinkedList<ISessionDatVisitor>();
+	// TODO: Remove after Hack removed:
+	private boolean isPrintedHackNote = false;
 
 	public SessionDatReader(final String filename) {
 		this.filename = filename;
@@ -68,9 +70,14 @@ class SessionDatReader {
 						maxTimeStamp = actionEndTime;
 					}
 				}
-								
-				long startTime = 1433841215000000000L;
-				  long endTime = 1433841815000000000L;  
+							
+				/* HACK TO GREP STEADY-STATE! */
+				if (! isPrintedHackNote ) {
+					isPrintedHackNote = true;
+					System.err.println("CAUTION: We have included a hack to grep the steady state. Chose code below to analyze full data.");
+				}
+				long startTime = 1434397382*1000000000L;
+				  long endTime = 1434398102*1000000000L;  
 			    if (userActions.get(0).getStartTime() > startTime && userActions.get( userActions.size() -1 ).getStartTime() < endTime) { 
 				   Session session = new Session(sessionId, userActions, minTimeStamp, maxTimeStamp);
 				   this.notifyVisitorsAboutNewSession(session);

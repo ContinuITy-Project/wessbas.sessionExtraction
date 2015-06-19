@@ -11,17 +11,21 @@ import org.apache.commons.lang3.ArrayUtils;
  * 
  */
 public class SessionAnalyzer {
-	static final String INPUT_SESSIONS_DAT_FN = "c:/kieker-specj-measure_faban-harness-800-user_50b_25p_25m_norm_dist_600/sessions.dat";
-	static final String OUTPUT_DIR = "C:/kieker-specj-measure_faban-harness-800-user_50b_25p_25m_norm_dist_600/";
+	static final String INPUT_SESSIONS_DAT_FN = "/mnt/sda1/avh-data/Paper_WorkloadModelExtraction/Journal_Automatic_Generation_of_Load_Tests_and_Performance_Models/evaluation/1200U_50B_25P_25M/kieker-specj-measure_SUT_jmeter-1200-user_50b_25p_25m_720_6_cpu/sessions.dat";
+	static final String OUTPUT_DIR = "/mnt/sda1/avh-data/Paper_WorkloadModelExtraction/Journal_Automatic_Generation_of_Load_Tests_and_Performance_Models/evaluation/1200U_50B_25P_25M/kieker-specj-measure_SUT_jmeter-1200-user_50b_25p_25m_720_6_cpu/";
 	
 	public static void main(String[] args) throws IOException {
 
 		final SessionDatReader sessionDatReader = new SessionDatReader(INPUT_SESSIONS_DAT_FN);
 
-		final SessionVisitorSessionLengthStatistics sessionVisitorSessionLengthStatistics =
-				new SessionVisitorSessionLengthStatistics();
+		final SessionVisitorSessionLengthNumActionsStatistics sessionVisitorSessionLengthStatistics =
+				new SessionVisitorSessionLengthNumActionsStatistics();
 		sessionDatReader.registerVisitor(sessionVisitorSessionLengthStatistics);
 
+		final SessionVisitorSessionLengthNanosStatistics sessionVisitorSessionLengthNanosStatistics =
+				new SessionVisitorSessionLengthNanosStatistics();
+		sessionDatReader.registerVisitor(sessionVisitorSessionLengthNanosStatistics);
+		
 		final SessionVisitorMinMaxTimeStamp sessionVisitorMinMaxTimeStamp = new SessionVisitorMinMaxTimeStamp();
 		sessionDatReader.registerVisitor(sessionVisitorMinMaxTimeStamp);
 		
@@ -59,6 +63,9 @@ public class SessionAnalyzer {
 		//System.out.println("Length vector: " + ArrayUtils.toString(sessionVisitorSessionLengthStatistics.computeLengthVector()));
 		System.out.println("Mean length (# user actions): " + sessionVisitorSessionLengthStatistics.computeSessionLengthMean());
 		System.out.println("Standard dev (# user actions): " + sessionVisitorSessionLengthStatistics.computeSessionLengthStdDev());
+		sessionVisitorSessionLengthNanosStatistics.writeSessionsOverTime(OUTPUT_DIR);
+		System.out.println("Mean length (milliseconds): " + TimeUnit.MILLISECONDS.convert((long)sessionVisitorSessionLengthNanosStatistics.computeSessionLengthMean(), TimeUnit.NANOSECONDS));
+		System.out.println("Standard dev (milliseconds): " + TimeUnit.MILLISECONDS.convert((long)sessionVisitorSessionLengthNanosStatistics.computeSessionLengthStdDev(), TimeUnit.NANOSECONDS));
 		System.out.println("Average Session Duration: " + sessionVisitorMinMaxTimeStamp.getAverageSessionTimeLength());
 		System.out.println("Timespan (nanos since epoche): " + sessionVisitorMinMaxTimeStamp.getMinTimeStamp() + " - "
 				+ sessionVisitorMinMaxTimeStamp.getMaxTimeStamp());
